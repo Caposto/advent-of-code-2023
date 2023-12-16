@@ -19,16 +19,35 @@ async function count_possible_games(filePath) {
 
   for await (const line of lineQueue) {
     // Split input into each game based on semicolon
-    games = line.split("; ");
+    let games = line.split("; ");
     games = [...games[0].split(": "), ...games.slice(1)];
-    console.log(games);
 
     let currentGameId = Number(games[0].split(" ")[1]);
     let validGame = true;
 
-    // Split each turn into an array of 3 objects [red, green, blue]
+    // Compare the cube quantities of each game [red, green, blue]
+    for await (const game of games.slice(1)) { // Remove first item since that is the Game ID
+      let cubeQuantities = game.split(", ");
+
+      for await (const quantity of cubeQuantities) {
+        let individualQuantity = quantity.split(" ");
+        let amount = individualQuantity[0];
+        let color = individualQuantity[1];
+
+        if (color == "red" && Number(amount) > 12) {
+          validGame = false;
+        }
+        else if (color == "green" && Number(amount) > 13) {
+          validGame = false;
+        }
+        else if (color == "blue" && Number(amount) > 14) {
+          validGame = false;
+        }
+      }
+    }
 
     if (validGame) {
+      console.log("ID: " + currentGameId)
       idSum += currentGameId;
     }
 
@@ -37,4 +56,9 @@ async function count_possible_games(filePath) {
   return idSum;
 }
 
-count_possible_games("day_2_input.txt");
+// FIXME: Is this the best wayy to handle a promise?
+count_possible_games("day_2_input.txt").then(function(result){
+  console.log(result);
+});
+
+// ANSWER: 2006
