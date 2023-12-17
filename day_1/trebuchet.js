@@ -56,7 +56,7 @@ async function processInputByLine(filePath) {
   console.log(sum);
 }
 
-console.log(processInputByLine("input.txt")); 
+console.log(processInputByLine("day_1_input.txt")); 
 
 // Part 1 : 55712
 // Part 2 : 55413 (Mine is Wrong)
