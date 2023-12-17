@@ -36,7 +36,9 @@ function sumEngineParts(engineSchematic) {
   const COLS = engineSchematic[0].length;
   const visited = new Set();
   const digits = new Set(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]);
-  const directions =[[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]];
+
+  // [row, col] : right, left, up, down, upper/right, bottom/right, upper/left, bottom/left
+  const directions =[[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [1, -1], [-1, 1], [-1, -1]];
   let partSum = 0;
 
   // Helper function that gets the full engine number given a row from the schematic and the index detected
@@ -54,7 +56,9 @@ function sumEngineParts(engineSchematic) {
       right++; 
     }
 
-    return Number(engineSchematicRow.slice(left, right + 1).join(''));
+    const enginePartNumber = Number(engineSchematicRow.slice(left, right + 1).join(''));
+
+    return enginePartNumber;
   }
 
   for (let r = 0; r < ROWS; r++) {
@@ -64,14 +68,13 @@ function sumEngineParts(engineSchematic) {
         for (let i = 0; i < directions.length; i++) {
           let new_r = r + directions[i][0];
           let new_c = c + directions[i][1];
-
+          const isNumber = digits.has(engineSchematic[new_r][new_c]);
           if (visited.has((new_r, new_c)) || new_r < 0 || new_r >= ROWS || new_c < 0 || new_c >= COLS) {
             continue;
           }
           if (digits.has(engineSchematic[new_r][new_c])) {
             partSum += getFullEngineNumber(engineSchematic[new_r], new_c, new_r);
           }
-          visited.add((new_r, new_c));
         }
       }
     }
@@ -80,10 +83,10 @@ function sumEngineParts(engineSchematic) {
   return partSum;
 }
 
-createGraphFromInput("day_3_input.txt")
+createGraphFromInput("smaller_input.txt")
   .then(function(result) {
     console.log(sumEngineParts(result));
   }
 );
 
-// Current Incorrect ANSWER: 9882 (TOO LOW)
+// ANSWER: 47571 (TOO LOW)
