@@ -25,12 +25,6 @@ async function createGraphFromInput(filePath) {
   return gearGraph;
 }
 
-/* Time Complexity: O(V+E)
- * FOR EACH ROW:
- *  FOR EACH COL:
- *    Run BFS on one level if symbol is encountered
- *    Add (row, col) coordinates to a visited set - this set should contain past visited part numbers AND symbols
- */ 
 function sumEngineParts(engineSchematic) {
   const ROWS = engineSchematic.length;
   const COLS = engineSchematic[0].length;
@@ -43,21 +37,22 @@ function sumEngineParts(engineSchematic) {
 
   // Helper function that gets the full engine number given a row from the schematic and the index detected
   function getFullEngineNumber(engineSchematicRow, c, r) {
+    visited.add(`${r},${c}`);
     let left = c;
     let right = c;
 
     while (left - 1 > 0 && digits.has(engineSchematicRow[left - 1])) {
-      visited.add((r, left));
       left--; 
+      visited.add(`${r},${left}`);
     }
 
     while (right + 1 < COLS && digits.has(engineSchematicRow[right + 1])) {
-      visited.add((r, right));
-      right++; 
+      right++;
+      visited.add(`${r},${right}`);
     }
 
     const enginePartNumber = Number(engineSchematicRow.slice(left, right + 1).join(''));
-
+    console.log(enginePartNumber);
     return enginePartNumber;
   }
 
@@ -68,10 +63,11 @@ function sumEngineParts(engineSchematic) {
         for (let i = 0; i < directions.length; i++) {
           let new_r = r + directions[i][0];
           let new_c = c + directions[i][1];
-          const isNumber = digits.has(engineSchematic[new_r][new_c]);
-          if (visited.has((new_r, new_c)) || new_r < 0 || new_r >= ROWS || new_c < 0 || new_c >= COLS) {
+
+          if (visited.has(`${new_r},${new_c}`) || new_r < 0 || new_r >= ROWS || new_c < 0 || new_c >= COLS) {
             continue;
           }
+
           if (digits.has(engineSchematic[new_r][new_c])) {
             partSum += getFullEngineNumber(engineSchematic[new_r], new_c, new_r);
           }
@@ -79,7 +75,6 @@ function sumEngineParts(engineSchematic) {
       }
     }
   }
-
   return partSum;
 }
 
@@ -88,5 +83,3 @@ createGraphFromInput("smaller_input.txt")
     console.log(sumEngineParts(result));
   }
 );
-
-// ANSWER: 47571 (TOO LOW)
